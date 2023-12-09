@@ -1,6 +1,6 @@
 require "strong_yaml"
 
-module DndMusic
+module Bard
   class Config
     include StrongYAML
 
@@ -16,4 +16,4 @@ module DndMusic
   end
 end
 
-DndMusic::Config.create_or_load
+Bard::Config.create_or_load
