@@ -61,10 +61,10 @@ module Bard
       end
       @bot.application_command(:bard).subcommand(:play) do |event|
         sound = Sound.find(name: event.options["sound"])
-        next event.respond(content: "Sound not found: `#{event.options["sound"]}`") if !sound
+        next event.respond(content: "Sound not found: `#{event.options["sound"]}`", ephemeral: true) if !sound
 
         channel = event.user.voice_channel
-        next event.respond(content: "You're not in any voice channel!") unless channel
+        next event.respond(content: "You're not in any voice channel!", ephemeral: true) unless channel
         @bot.voice_connect(channel)
 
         event.respond(content: "You selected: #{sound.name}", ephemeral: true)
@@ -120,7 +120,7 @@ module Bard
 
       @bot.select_menu(custom_id: "sound_select") do |event|
         channel = event.user.voice_channel
-        next event.respond(content: "You're not in any voice channel!") unless channel
+        next event.respond(content: "You're not in any voice channel!", ephemeral: true) unless channel
         @bot.voice_connect(channel)
 
         event.respond(content: "You selected: #{event.values.first}", ephemeral: true)
