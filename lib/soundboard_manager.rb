@@ -36,7 +36,7 @@ class SoundboardManager
     Thread.new do
       while !@stop_threads
         sleep 10
-    
+
         @bot.voices.each do |server_id, voice|
           if voice.channel.users.none? {|user| user.id != @bot.profile.id}
             @currently_playing.delete(server_id)
