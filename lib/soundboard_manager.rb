@@ -6,11 +6,13 @@ class SoundboardManager
     @sound_lists_per_server = {}
     @currently_playing = {}
     @switching_sounds = []
+
+    @stop_threads = false
   end
 
   def play_sound(server_id, sound)
-    @bot.voices[server_id].play_file(sound.file)
     @currently_playing[server_id] = sound
+    @bot.voices[server_id].play_file(sound.file)
   end
 
   def stop(server_id)
@@ -32,7 +34,7 @@ class SoundboardManager
 
   def start_threads
     Thread.new do
-      while true
+      while !@stop_threads
         sleep 10
     
         @bot.voices.each do |server_id, voice|
@@ -45,8 +47,8 @@ class SoundboardManager
     end
 
     Thread.new do
-      while true
-        sleep(1)
+      while !@stop_threads
+        sleep 1
 
         @currently_playing.each do |server_id, sound|
           if !@bot.voices[server_id]&.playing?

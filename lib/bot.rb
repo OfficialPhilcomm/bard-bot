@@ -12,12 +12,12 @@ module Bard
     def initialize
       @bot = Discordrb::Bot.new(token: Bard::Config.discord.token)
       @soundboard_manager = SoundboardManager.new(bot: @bot)
-      @soundboard_manager.start_threads
 
       setup_commands
     end
 
     def start
+      @soundboard_manager.start_threads
       @bot.run
     end
 
