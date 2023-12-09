@@ -24,7 +24,7 @@ module Bard
     private
 
     def setup_commands
-      @bot.register_application_command(:bard, "Open the soundboard panel", server_id: "906610348726038529") do |bard_cmd|
+      @bot.register_application_command(:bard, "Open the soundboard panel") do |bard_cmd|
         bard_cmd.subcommand(:controls, "Print the controls")
         bard_cmd.subcommand(:list, "List all songs")
         bard_cmd.subcommand(:configure, "Configure the soundboard") do |configure_cmd|
