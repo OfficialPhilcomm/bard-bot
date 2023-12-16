@@ -38,13 +38,19 @@ module Bard
       end
 
       @bot.application_command(:bard).subcommand(:list) do |event|
+        max_page = Sound.all.count / 25
         sound_list = <<~STR
+          Here are the sounds. Page: 1/#{max_page + 1}
           ```
-          #{Sound.all.map(&:name).join("\n")}
+          #{Sound.all.first(25).map(&:name).join("\n")}
           ```
         STR
 
-        event.respond(content: sound_list, ephemeral: true)
+        event.respond(content: sound_list, ephemeral: true) do |_, view|
+          view.row do |r|
+            r.button(label: '>', style: :primary, custom_id: 'list_sounds:1')
+          end
+        end
       end
 
       @bot.application_command(:bard).subcommand(:play) do |event|
@@ -126,6 +132,28 @@ module Bard
         @soundboard_manager.stop(event.server.id)
         @bot.voices[event.server.id]&.destroy
         event.respond(content: "I disconnected from the voice channel. Until we meet again _*runs away*_", ephemeral: true)
+      end
+
+      @bot.button(custom_id: /^list_sounds:\d+$/) do |event|
+        page = event.interaction.button.custom_id.match(/^list_sounds:(\d+)$/)[1]&.to_i
+        next event.respond(content: "An error occurred", ephemeral: true) unless page
+
+        max_page = Sound.all.count / 25
+        sounds = Sound.all.each_slice(25).to_a[page]
+
+        sound_list = <<~STR
+          Here are the sounds. Page: #{page + 1}/#{max_page + 1}
+          ```
+          #{sounds.map(&:name).join("\n")}
+          ```
+        STR
+
+        event.update_message(content: sound_list, ephemeral: true) do |_, view|
+          view.row do |r|
+            r.button(label: "<", style: :primary, custom_id: "list_sounds:#{page - 1}") if page > 0
+            r.button(label: ">", style: :primary, custom_id: "list_sounds:#{page + 1}") if page < max_page
+          end
+        end
       end
 
       @bot.select_menu(custom_id: "sound_select") do |event|
