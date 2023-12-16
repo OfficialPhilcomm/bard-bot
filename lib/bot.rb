@@ -34,6 +34,7 @@ module Bard
         end
         bard_cmd.subcommand(:controls, "Print the controls")
         bard_cmd.subcommand(:stop, "Stop the playback")
+        bard_cmd.subcommand(:disconnect, "Disconnect the bot from voice channel")
       end
 
       @bot.application_command(:bard).subcommand(:list) do |event|
@@ -117,6 +118,14 @@ module Bard
       @bot.application_command(:bard).subcommand(:stop) do |event|
         @soundboard_manager.stop(event.server.id)
         event.respond(content: "Stopped the playback", ephemeral: true)
+      end
+
+      @bot.application_command(:bard).subcommand(:disconnect) do |event|
+        next event.respond(content: "Bard is not connected to any voice channel on this server", ephemeral: true) unless @bot.voices[event.server.id]
+
+        @soundboard_manager.stop(event.server.id)
+        @bot.voices[event.server.id]&.destroy
+        event.respond(content: "I disconnected from the voice channel. Until we meet again _*runs away*_", ephemeral: true)
       end
 
       @bot.select_menu(custom_id: "sound_select") do |event|
