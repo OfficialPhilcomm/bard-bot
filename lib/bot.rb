@@ -25,29 +25,15 @@ module Bard
 
     def setup_commands
       @bot.register_application_command(:bard, "Open the soundboard panel") do |bard_cmd|
-        bard_cmd.subcommand(:controls, "Print the controls")
         bard_cmd.subcommand(:list, "List all songs")
-        bard_cmd.subcommand(:configure, "Configure the soundboard") do |configure_cmd|
-          configure_cmd.attachment(:sound_list, "List of sounds to use", required: true)
-        end
         bard_cmd.subcommand(:play, "Play a sound") do |play_cmd|
           play_cmd.string("sound", "Which sound to play", required: true)
         end
-        bard_cmd.subcommand(:stop, "Stop the playback")
-      end
-
-      @bot.application_command(:bard).subcommand(:controls) do |event|
-        next event.respond(content: "No list prepared", ephemeral: true) if !@soundboard_manager.is_soundboard_configured?(event.server.id)
-
-        event.respond(content: "Select a sound to start", ephemeral: true) do |_, view|
-          view.row do |r|
-            r.select_menu(custom_id: "sound_select", placeholder: "Select me!") do |s|
-              @soundboard_manager.get_soundboard(event.server.id).map do |sound|
-                s.option(label: sound.name, value: sound.file)
-              end
-            end
-          end
+        bard_cmd.subcommand(:configure, "Configure the soundboard") do |configure_cmd|
+          configure_cmd.attachment(:sound_list, "List of sounds to use", required: true)
         end
+        bard_cmd.subcommand(:controls, "Print the controls")
+        bard_cmd.subcommand(:stop, "Stop the playback")
       end
 
       @bot.application_command(:bard).subcommand(:list) do |event|
@@ -59,6 +45,7 @@ module Bard
 
         event.respond(content: sound_list, ephemeral: true)
       end
+
       @bot.application_command(:bard).subcommand(:play) do |event|
         sound = Sound.find(name: event.options["sound"])
         next event.respond(content: "Sound not found: `#{event.options["sound"]}`", ephemeral: true) if !sound
@@ -111,6 +98,20 @@ module Bard
           `#{sounds.map(&:first).join("`\n`")}`
         STR
         event.respond(content: response, ephemeral: true)
+      end
+
+      @bot.application_command(:bard).subcommand(:controls) do |event|
+        next event.respond(content: "No list prepared", ephemeral: true) if !@soundboard_manager.is_soundboard_configured?(event.server.id)
+
+        event.respond(content: "Select a sound to start", ephemeral: true) do |_, view|
+          view.row do |r|
+            r.select_menu(custom_id: "sound_select", placeholder: "Select me!") do |s|
+              @soundboard_manager.get_soundboard(event.server.id).map do |sound|
+                s.option(label: sound.name, value: sound.file)
+              end
+            end
+          end
+        end
       end
 
       @bot.application_command(:bard).subcommand(:stop) do |event|
