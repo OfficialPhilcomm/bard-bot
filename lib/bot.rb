@@ -48,7 +48,7 @@ module Bard
 
         event.respond(content: sound_list, ephemeral: true) do |_, view|
           view.row do |r|
-            r.button(label: '>', style: :primary, custom_id: 'list_sounds:1')
+            r.button(label: 'Next Page', emoji: "➡️", style: :primary, custom_id: 'list_sounds:1')
           end
         end
       end
@@ -150,8 +150,8 @@ module Bard
 
         event.update_message(content: sound_list, ephemeral: true) do |_, view|
           view.row do |r|
-            r.button(label: "<", style: :primary, custom_id: "list_sounds:#{page - 1}") if page > 0
-            r.button(label: ">", style: :primary, custom_id: "list_sounds:#{page + 1}") if page < max_page
+            r.button(label: 'Previous Page', emoji: "⬅️", style: :primary, custom_id: "list_sounds:#{page - 1}") if page > 0
+            r.button(label: 'Next Page', emoji: "➡️", style: :primary, custom_id: "list_sounds:#{page + 1}") if page < max_page
           end
         end
       end
