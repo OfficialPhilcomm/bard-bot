@@ -114,7 +114,7 @@ module Bard
           view.row do |r|
             r.select_menu(custom_id: "sound_select", placeholder: "Select me!") do |s|
               @soundboard_manager.get_soundboard(event.server.id).map do |sound|
-                s.option(label: sound.name, value: sound.file)
+                s.option(label: sound.name, value: sound.file, emoji: nil)
               end
             end
           end

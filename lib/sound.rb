@@ -3,7 +3,7 @@ class Sound
 
   def initialize(sound_file)
     @file = sound_file
-    @name = sound_file.gsub("sounds/", "").gsub(".mp3", "")
+    @name = sound_file.split("/").last.gsub(".mp3", "")
   end
 
   def self.find(file: nil, name: nil)
@@ -21,7 +21,7 @@ class Sound
   end
 
   def self.initialize
-    @@sounds = Dir["sounds/*.mp3"]
+    @@sounds = Dir["sounds/**/*.mp3"]
       .map do |sound_file|
         Sound.new(sound_file)
       end
