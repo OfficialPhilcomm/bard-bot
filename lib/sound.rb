@@ -24,7 +24,9 @@ class Sound
     @@sounds = Dir["sounds/**/*.mp3"]
       .map do |sound_file|
         Sound.new(sound_file)
-      end.sort(&:name)
+      end.sort do |sound|
+        sound.name
+      end
   end
 end
 
